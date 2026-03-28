@@ -1,0 +1,6 @@
+@VCC.Assignment3_HostAddress = http://localhost:5247
+
+GET {{VCC.Assignment3_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
