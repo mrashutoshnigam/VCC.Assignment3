@@ -1,8 +1,8 @@
-# VCC Assignment 3: Hybrid Cloud Auto-Scaling System
-
+# VCC Assignment 3: Create a Local VM and Auto-Scale It to Any Public Cloud Platform When Resource Usage Exceeds 75% in Local VM
 **Student Name:** Ashutosh Nigam  
 **Roll Number:** M25AI2006  
-**Course:** Virtual Cloud Computing (VCC)
+**Course:** Virtual Cloud Computing (VCC)  
+**Cloud:** Amazon Web Services (AWS)
 
 ---
 
@@ -31,6 +31,9 @@ This ASP.NET Core Web API application serves as a **System Resource Monitor and 
 
 This API acts as the core application deployed on a local VM that can be monitored by tools like Prometheus/Grafana, which then trigger auto-scaling to cloud platforms when resource thresholds are exceeded.
 
+---
+## Architecture Diagram
+![Mermaid Diagram](mermaid.png)
 ---
 
 ## Technology Stack
@@ -157,6 +160,8 @@ Trigger a controlled CPU spike for testing auto-scaling.
   - `Long_15Seconds`: 15 seconds
   - `XLong_30Seconds`: 30 seconds
   - `XXLong_60Seconds`: 60 seconds
+  - `XXLong_120Seconds` = 120,
+  - `XXLong_240Seconds` = 240
 
 **Example:**
 ```
@@ -187,38 +192,6 @@ POST http://localhost:5000/api/system/cpu-spike?duration=Medium_10Seconds
 4. Modify parameters if needed and click "Execute"
 5. View the response below
 
-### Using curl
-
-```bash
-# Check status
-curl -X GET http://localhost:5000/api/system/status
-
-# Get system resources
-curl -X GET http://localhost:5000/api/system/resources
-
-# Trigger memory spike
-curl -X POST "http://localhost:5000/api/system/memory-spike?spikeSize=Medium_1GB"
-
-# Trigger CPU spike
-curl -X POST "http://localhost:5000/api/system/cpu-spike?duration=Long_15Seconds"
-```
-
-### Using PowerShell
-
-```powershell
-# Check status
-Invoke-RestMethod -Uri "http://localhost:5000/api/system/status" -Method Get
-
-# Get system resources
-Invoke-RestMethod -Uri "http://localhost:5000/api/system/resources" -Method Get
-
-# Trigger memory spike
-Invoke-RestMethod -Uri "http://localhost:5000/api/system/memory-spike?spikeSize=Large_2GB" -Method Post
-
-# Trigger CPU spike
-Invoke-RestMethod -Uri "http://localhost:5000/api/system/cpu-spike?duration=XLong_30Seconds" -Method Post
-```
-
 ---
 
 ## Project Structure
@@ -241,138 +214,10 @@ VCC.Assignment3/
 
 ---
 
-## Deliverables
-
-### 1. Document Report
-Step-by-step instructions covering:
-- ✅ Creation of a local VM (VirtualBox/VMware/Hyper-V)
-- ✅ Implementation of resource monitoring (Prometheus + Grafana)
-- ✅ Configuration of cloud auto-scaling policies
-- ✅ Deployment of this sample application
-
-### 2. Architecture Design
-Diagram illustrating:
-- Local VM resource monitoring
-- Threshold detection (>75% utilization)
-- Auto-scaling trigger to cloud (GCP/AWS/Azure)
-- Cloud deployment and load balancing
-
-### 3. Source Code Repository
-- ✅ This repository contains the monitoring API
-- ✅ Deployment configurations
-- ✅ Application code
-
-### 4. Recorded Video Demo
-Video demonstration showing:
-- Setup process
-- Resource monitoring in action
-- Auto-scaling process
-- Detailed voice-over explanation
-
----
-
-## How This Application Supports Auto-Scaling Testing
-
-This application is specifically designed to test auto-scaling mechanisms:
-
-1. **Baseline Monitoring:** The `/api/system/resources` endpoint provides real-time metrics that can be scraped by Prometheus
-
-2. **Load Generation:** The CPU and Memory spike endpoints allow controlled testing of auto-scaling triggers
-
-3. **Threshold Testing:** By triggering spikes, you can simulate scenarios where local VM resources exceed 75% utilization
-
-4. **Integration Ready:** The API can be integrated with:
-   - Prometheus for metrics collection
-   - Grafana for visualization
-   - Cloud-native monitoring solutions (CloudWatch, Azure Monitor, GCP Monitoring)
-   - Custom auto-scaling scripts
-
----
-
-## Example Auto-Scaling Workflow
-
-1. **Deploy application on local VM** (VirtualBox/VMware)
-2. **Set up Prometheus** to scrape `/api/system/resources` endpoint
-3. **Configure Grafana dashboards** to visualize CPU and Memory usage
-4. **Create alerting rules** when usage exceeds 75%
-5. **Trigger auto-scaling script** that:
-   - Provisions cloud VM (AWS EC2, GCP Compute Engine, Azure VM)
-   - Deploys this application to cloud
-   - Configures load balancer to distribute traffic
-6. **Test by calling** `/api/system/cpu-spike` or `/api/system/memory-spike`
-7. **Observe** automatic migration to cloud when thresholds are exceeded
-
----
-
-## Monitoring Integration Examples
-
-### Prometheus Configuration (prometheus.yml)
-```yaml
-scrape_configs:
-  - job_name: 'vcc-assignment3'
-    metrics_path: '/api/system/resources'
-    scrape_interval: 15s
-    static_configs:
-      - targets: ['localhost:5000']
-```
-
-### Alert Rule Example
-```yaml
-groups:
-  - name: resource_alerts
-    rules:
-      - alert: HighCPUUsage
-        expr: cpu_usage_percent > 75
-        for: 2m
-        annotations:
-          summary: "CPU usage exceeded 75%"
-      
-      - alert: HighMemoryUsage
-        expr: memory_usage_percent > 75
-        for: 2m
-        annotations:
-          summary: "Memory usage exceeded 75%"
-```
-
----
-
-## Troubleshooting
-
-### Port Already in Use
-If port 5000 or 5001 is already in use, modify `Properties/launchSettings.json` to use different ports.
-
-### Memory Spike Fails
-Ensure your system has enough available memory. Start with smaller spike sizes and gradually increase.
-
-### CPU Spike Doesn't Show High Usage
-The application uses 80% of available cores. On systems with many cores, this may not show as 100% CPU in task manager.
-
----
-
-## Future Enhancements
-
-- [ ] Add metrics exporter for Prometheus format
-- [ ] Implement WebSocket for real-time monitoring
-- [ ] Add database connectivity spike testing
-- [ ] Include network bandwidth testing
-- [ ] Add disk I/O spike testing
-- [ ] Implement health check endpoints
-- [ ] Add authentication and rate limiting
-
----
-
-## License
-
-This project is created for educational purposes as part of VCC Assignment 3.
-
----
-
 ## Contact
 
 **Student:** Ashutosh Nigam  
 **Roll Number:** M25AI2006  
-
-For questions or issues related to this assignment, please contact through the official course channels.
 
 ---
 
@@ -381,7 +226,11 @@ For questions or issues related to this assignment, please contact through the o
 - ASP.NET Core Documentation
 - Prometheus & Grafana Community
 - Virtual Cloud Computing Course Materials
+- [How to Install and Configure Prometheus and Grafana on Ubuntu
+](https://www.linode.com/docs/guides/how-to-install-prometheus-and-grafana-on-ubuntu/)
+- [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
+- [Installing Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/installation/)
+- [Prometheus vs Grafana](https://www.opsramp.com/guides/prometheus-monitoring/prometheus-vs-grafana/)
+
 
 ---
-
-**Last Updated:** March 2026
