@@ -40,13 +40,14 @@ namespace VCC.Assignment3.Controllers
                 var list = new List<byte[]>();
                 int sizeMB = (int)spikeSize;
                 int chunks = sizeMB / 10;
-                
+
                 for (int i = 0; i < chunks; i++)
                 {
                     list.Add(new byte[10 * 1024 * 1024]); // 10 MB chunks
                 }
-                
-                return Ok(new { 
+
+                return Ok(new
+                {
                     message = "Memory spike triggered",
                     sizeAllocatedMB = sizeMB,
                     chunks = chunks
@@ -67,10 +68,10 @@ namespace VCC.Assignment3.Controllers
                 int targetMs = durationSeconds * 1000;
                 int processorCount = Environment.ProcessorCount;
                 int threadsToUse = (int)Math.Ceiling(processorCount * 0.8); // 80% of CPU cores
-                
+
                 var sw = Stopwatch.StartNew();
                 var tasks = new List<Task>();
-                
+
                 for (int i = 0; i < threadsToUse; i++)
                 {
                     tasks.Add(Task.Run(() =>
@@ -86,10 +87,11 @@ namespace VCC.Assignment3.Controllers
                         }
                     }));
                 }
-                
+
                 Task.WaitAll(tasks.ToArray());
-                
-                return Ok(new { 
+
+                return Ok(new
+                {
                     message = "CPU spike triggered",
                     durationSeconds = durationSeconds,
                     actualDurationMs = sw.ElapsedMilliseconds,
@@ -107,21 +109,30 @@ namespace VCC.Assignment3.Controllers
         [HttpGet("resources")]
         public IActionResult GetSystemResources()
         {
-            var process = Process.GetCurrentProcess();
-            var totalMemoryBytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
-            var usedMemoryBytes = process.WorkingSet64;
-            var cpuTime = process.TotalProcessorTime.TotalMilliseconds;
+            var gcInfo = GC.GetGCMemoryInfo();
+            var totalMemoryBytes = gcInfo.TotalAvailableMemoryBytes;
+            var memoryLoadBytes = gcInfo.MemoryLoadBytes;
+
             var systemName = RuntimeInformation.OSDescription;
-            
+            var osArchitecture = RuntimeInformation.OSArchitecture.ToString();
+            var frameworkDescription = RuntimeInformation.FrameworkDescription;
+            var processorCount = Environment.ProcessorCount;
+            var systemUptime = TimeSpan.FromMilliseconds(Environment.TickCount64).ToString(@"dd\.hh\:mm\:ss");
+
             double totalMemoryGB = Math.Round(totalMemoryBytes / (1024.0 * 1024.0 * 1024.0), 2);
-            double usedMemoryGB = Math.Round(usedMemoryBytes / (1024.0 * 1024.0 * 1024.0), 2);
-            
+            double usedMemoryGB = Math.Round(memoryLoadBytes / (1024.0 * 1024.0 * 1024.0), 2);
+            double memoryUsagePercent = Math.Round((double)memoryLoadBytes / totalMemoryBytes * 100, 2);
+
             return Ok(new
             {
                 systemName,
+                osArchitecture,
+                frameworkDescription,
+                processorCount,
+                systemUptime,
                 totalMemoryGB,
                 usedMemoryGB,
-                cpuTimeMs = cpuTime
+                memoryUsagePercent
             });
         }
     }
