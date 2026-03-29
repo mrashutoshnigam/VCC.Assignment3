@@ -19,7 +19,9 @@ namespace VCC.Assignment3.Controllers
         Medium_10Seconds = 10,
         Long_15Seconds = 15,
         XLong_30Seconds = 30,
-        XXLong_60Seconds = 60
+        XXLong_60Seconds = 60,
+        XXLong_120Seconds = 120,
+        XXLong_240Seconds = 240
     }
 
     [ApiController]
