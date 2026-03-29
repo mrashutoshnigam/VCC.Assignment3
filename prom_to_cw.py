@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 PROMETHEUS_URL = "http://localhost:9090"
 REGION         = "ap-south-2"          
 NAMESPACE      = "Ubuntu/Prometheus-Local-VM"  
-INTERVAL       = 60                   
+INTERVAL       = 10                   
 HOST           = socket.gethostname() 
 
 
